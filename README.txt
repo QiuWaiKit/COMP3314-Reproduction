@@ -9,12 +9,6 @@ Paper: "NAFS: A Simple yet Tough-to-beat Baseline for Graph Representation Learn
 FILES
 -----
 nafs_tutorial.py      Main implementation — clustering + link prediction
-nafs_seed_search.py   Seed search script (finds best KMeans seed to match paper)
-utils.py              Original utility functions (data loading, evaluation)
-clustering_*.py       Original clustering scripts (simple / mean / max / concat)
-link_prediction_*.py  Original link prediction scripts
-run.sh                Original script with all hyperparameter settings
-
 
 QUICK START
 -----------
