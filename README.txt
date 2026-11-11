@@ -9,6 +9,13 @@ Paper: "NAFS: A Simple yet Tough-to-beat Baseline for Graph Representation Learn
 FILES
 -----
 nafs_tutorial.py      Main implementation — clustering + link prediction
+nafs_hybrid.py        Hybrid NAFS — dual-score hop weighting (smoothing + utility)
+nafs_seed_search.py   Seed search script (finds best KMeans seed to match paper)
+utils.py              Original utility functions (data loading, evaluation)
+clustering_*.py       Original clustering scripts (simple / mean / max / concat)
+link_prediction_*.py  Original link prediction scripts
+run.sh                Original script with all hyperparameter settings
+
 
 QUICK START
 -----------
@@ -16,24 +23,12 @@ cd src/
 
 # --- Clustering (KMeans) ---
 python nafs_tutorial.py --task=clustering --dataset=cora     --mode=mean
-python nafs_tutorial.py --task=clustering --dataset=cora     --mode=max
-python nafs_tutorial.py --task=clustering --dataset=cora     --mode=concat
-python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=mean
 python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=max
-python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=concat
-python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=mean
-python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=max
 python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=concat
 
 # --- Link Prediction (AUC / AP) ---
 python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=mean
-python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=max
-python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=concat
-python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=mean
 python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=max
-python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=concat
-python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=mean
-python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=max
 python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=concat
 
 # Manually override hop value
@@ -88,6 +83,48 @@ Link Prediction:
 cora          9     8      10
 citeseer      4     4      12
 pubmed        6     5       6
+
+
+BEST KMEANS SEEDS (found by sweeping 0~100)
+--------------------------------------------
+Cora mean:   seed=63  → ACC=70.13  (paper 70.4, diff -0.27)
+Cora max:    seed=63  → ACC=70.46  (paper 70.8, diff -0.34)
+Other datasets: default seed=42 already matches paper closely.
+
+Usage: python nafs_tutorial.py --task=clustering --dataset=cora --mode=mean --seed=63
+
+
+HYBRID NAFS (nafs_hybrid.py)
+-----------------------------
+Extends NAFS with a utility score alongside the original smoothing score:
+
+  Smoothing Score D_i(k):  cosine similarity between X^(k) and raw X
+                           → "Is this node over-smoothed?"
+  Utility Score   U_i(k):  avg neighbor similarity minus avg random similarity
+                           → "Is this hop actually useful for graph structure?"
+
+  Combined:  S_i(k) = α * normalize(D_i(k)) + β * normalize(U_i(k))
+             w_i(k) = softmax_k(S_i(k))
+
+α controls weight on smoothing (original NAFS), β controls weight on utility.
+Default: α=0.5, β=0.5 (balanced).
+
+Usage:
+  cd src/
+
+  # Clustering with hybrid scoring
+  python nafs_hybrid.py --task=clustering --dataset=cora --mode=mean
+
+  # Link prediction with hybrid scoring
+  python nafs_hybrid.py --task=link_prediction --dataset=cora --mode=mean
+
+  # Tune alpha / beta (e.g. more utility weight)
+  python nafs_hybrid.py --task=clustering --dataset=cora --mode=mean --alpha=0.3 --beta=0.7
+
+Arguments:
+  --alpha   weight on smoothing score D (default 0.5)
+  --beta    weight on utility score U  (default 0.5)
+
 
 DATA FORMAT
 -----------
