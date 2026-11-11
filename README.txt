@@ -16,12 +16,24 @@ cd src/
 
 # --- Clustering (KMeans) ---
 python nafs_tutorial.py --task=clustering --dataset=cora     --mode=mean
+python nafs_tutorial.py --task=clustering --dataset=cora     --mode=max
+python nafs_tutorial.py --task=clustering --dataset=cora     --mode=concat
+python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=mean
 python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=max
+python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=concat
+python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=mean
+python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=max
 python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=concat
 
 # --- Link Prediction (AUC / AP) ---
 python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=mean
+python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=max
+python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=concat
+python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=mean
 python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=max
+python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=concat
+python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=mean
+python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=max
 python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=concat
 
 # Manually override hop value
@@ -76,16 +88,6 @@ Link Prediction:
 cora          9     8      10
 citeseer      4     4      12
 pubmed        6     5       6
-
-
-BEST KMEANS SEEDS (found by sweeping 0~100)
---------------------------------------------
-Cora mean:   seed=63  → ACC=70.13  (paper 70.4, diff -0.27)
-Cora max:    seed=63  → ACC=70.46  (paper 70.8, diff -0.34)
-Other datasets: default seed=42 already matches paper closely.
-
-Usage: python nafs_tutorial.py --task=clustering --dataset=cora --mode=mean --seed=63
-
 
 DATA FORMAT
 -----------
