@@ -172,7 +172,7 @@ def compute_utility_score(hop_features_list, adj, n_random=5):
 # Core: Hybrid Smooth Features
 # ============================================================
 
-def smooth_features_hybrid(adj, features, hop, r=0.5, alpha=0.5, beta=0.5):
+def smooth_features_hybrid(adj, features, hop, r=0.5, alpha=0.55, beta=0.45):
     """
     Hybrid NAFS smoothing:
       D_i(k) = cosine similarity between X^(k) and raw X  (smoothing score)
@@ -226,7 +226,7 @@ def smooth_features_hybrid(adj, features, hop, r=0.5, alpha=0.5, beta=0.5):
 
 def nafs_hybrid_embed(adj, features, hop,
                        r_list=(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-                       mode='mean', alpha=0.5, beta=0.5):
+                       mode='mean', alpha=0.55, beta=0.45):
     """
     Full hybrid NAFS pipeline.
     α = weight on smoothing score (original NAFS)
@@ -348,7 +348,7 @@ OPTIMAL_HOPS = {
 
 
 def run_clustering(dataset='cora', hop=None, mode='mean',
-                   alpha=0.5, beta=0.5, seed=63):
+                   alpha=0.55, beta=0.45, seed=63):
     task = 'clustering'
     if hop is None:
         hop = OPTIMAL_HOPS[task][dataset][mode]
@@ -378,7 +378,7 @@ def run_clustering(dataset='cora', hop=None, mode='mean',
 
 
 def run_link_prediction(dataset='cora', hop=None, mode='mean',
-                        alpha=0.5, beta=0.5, seed=63):
+                        alpha=0.55, beta=0.45, seed=63):
     task = 'link_prediction'
     if hop is None:
         hop = OPTIMAL_HOPS[task][dataset][mode]
@@ -430,10 +430,10 @@ if __name__ == '__main__':
     parser.add_argument('--mode', type=str, default='mean',
                         choices=['mean', 'max', 'concat'])
     parser.add_argument('--hop', type=int, default=None)
-    parser.add_argument('--alpha', type=float, default=0.5,
-                        help='Weight on smoothing score D (default 0.5)')
-    parser.add_argument('--beta', type=float, default=0.5,
-                        help='Weight on utility score U (default 0.5)')
+    parser.add_argument('--alpha', type=float, default=0.55,
+                        help='Weight on smoothing score D (default 0.55)')
+    parser.add_argument('--beta', type=float, default=0.45,
+                        help='Weight on utility score U  (default 0.45)')
     parser.add_argument('--seed', type=int, default=63)
     args = parser.parse_args()
 

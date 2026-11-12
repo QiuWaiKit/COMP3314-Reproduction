@@ -367,7 +367,7 @@ OPTIMAL_HOPS = {
 }
 
 
-def run_clustering(dataset='cora', hop=None, mode='mean', seed=42):
+def run_clustering(dataset='cora', hop=None, mode='mean', seed=10):
     """Run NAFS + KMeans clustering."""
     task = 'clustering'
     if hop is None:
@@ -392,7 +392,7 @@ def run_clustering(dataset='cora', hop=None, mode='mean', seed=42):
     evaluate_clustering(labels, y_pred, hop, mode, dataset)
 
 
-def run_link_prediction(dataset='cora', hop=None, mode='mean', seed=42):
+def run_link_prediction(dataset='cora', hop=None, mode='mean', seed=10):
     """Run NAFS + link prediction (AUC / AP)."""
     task = 'link_prediction'
     if hop is None:
@@ -436,7 +436,7 @@ if __name__ == '__main__':
                         help='Max smoothing step K (auto: paper optimal value)')
     parser.add_argument('--mode', type=str, default='mean',
                         choices=['mean', 'max', 'concat'], help='Feature ensemble strategy')
-    parser.add_argument('--seed', type=int, default=63, help='Random seed')
+    parser.add_argument('--seed', type=int, default=10, help='Random seed')
     args = parser.parse_args()
 
     if args.task == 'clustering':
