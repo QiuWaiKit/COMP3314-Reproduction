@@ -8,13 +8,15 @@ Paper: "NAFS: A Simple yet Tough-to-beat Baseline for Graph Representation Learn
 
 FILES
 -----
-nafs_tutorial.py      Main implementation — clustering + link prediction
-nafs_hybrid.py        Hybrid NAFS — dual-score hop weighting (smoothing + utility)
-nafs_seed_search.py   Seed search script (finds best KMeans seed to match paper)
-utils.py              Original utility functions (data loading, evaluation)
-clustering_*.py       Original clustering scripts (simple / mean / max / concat)
-link_prediction_*.py  Original link prediction scripts
-run.sh                Original script with all hyperparameter settings
+nafs_tutorial.py               Main implementation — clustering + link prediction
+nafs_hybrid.py                 Hybrid NAFS — dual-score hop weighting (smoothing + utility)
+nafs_seed_search.py            Seed search script (finds best KMeans seed to match paper)
+reproduce_clustering.py        NEW: Runs NAFS clustering across 3 seeds and reports the average.
+reproduce_link_prediction.py   NEW: Runs NAFS link prediction across 3 seeds and reports the average.
+utils.py                       Original utility functions (data loading, evaluation)
+clustering_*.py                Original clustering scripts (simple / mean / max / concat)
+link_prediction_*.py           Original link prediction scripts
+run.sh                         Original script with all hyperparameter settings                Original script with all hyperparameter settings
 
 
 QUICK START
@@ -25,9 +27,9 @@ cd src/
 python nafs_tutorial.py --task=clustering --dataset=cora     --mode=mean
 python nafs_tutorial.py --task=clustering --dataset=cora     --mode=max
 python nafs_tutorial.py --task=clustering --dataset=cora     --mode=concat
-python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=mean
-python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=max
-python nafs_tutorial.py --task=clustering --dataset=citeseer  --mode=concat
+python nafs_tutorial.py --task=clustering --dataset=citeseer --mode=mean
+python nafs_tutorial.py --task=clustering --dataset=citeseer --mode=max
+python nafs_tutorial.py --task=clustering --dataset=citeseer --mode=concat
 python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=mean
 python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=max
 python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=concat
@@ -36,12 +38,19 @@ python nafs_tutorial.py --task=clustering --dataset=pubmed   --mode=concat
 python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=mean
 python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=max
 python nafs_tutorial.py --task=link_prediction --dataset=cora     --mode=concat
-python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=mean
-python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=max
-python nafs_tutorial.py --task=link_prediction --dataset=citeseer  --mode=concat
+python nafs_tutorial.py --task=link_prediction --dataset=citeseer --mode=mean
+python nafs_tutorial.py --task=link_prediction --dataset=citeseer --mode=max
+python nafs_tutorial.py --task=link_prediction --dataset=citeseer --mode=concat
 python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=mean
 python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=max
 python nafs_tutorial.py --task=link_prediction --dataset=pubmed   --mode=concat
+
+
+# --- Multi-Seed Averaging (For Paper Reproduction) ---
+# Since KMeans and Edge Splitting are sensitive to random initialization, 
+# these scripts run 3 seeds (10, 42, 99) and output the averaged results.
+python reproduce_clustering.py
+python reproduce_link_prediction.py
 
 # Manually override hop value
 python nafs_tutorial.py --task=clustering --dataset=cora --mode=mean --hop=10
@@ -56,7 +65,7 @@ ARGUMENTS
 --dataset     cora | citeseer | pubmed
 --mode        mean | max | concat            (ensemble strategy across r values)
 --hop         max smoothing step K (default: auto = paper optimal)
---seed        random seed (default: 42)
+--seed        random seed (default: 10)
 
 
 HOW IT WORKS
@@ -110,36 +119,20 @@ Extends NAFS with a utility score alongside the original smoothing score:
              w_i(k) = softmax_k(S_i(k))
 
 α controls weight on smoothing (original NAFS), β controls weight on utility.
-Default: α=0.5, β=0.5 (balanced).
+Default: α=0.55, β=0.45 (balanced).
 
 Usage:
   cd src/
 
-# Clustering with hybrid scoring
-   python nafs_hybrid.py --task=clustering --dataset=cora --mode=mean
-   python nafs_hybrid.py --task=clustering --dataset=cora --mode=max
-   python nafs_hybrid.py --task=clustering --dataset=cora --mode=concat
-   python nafs_hybrid.py --task=clustering --dataset=citeseer --mode=mean
-   python nafs_hybrid.py --task=clustering --dataset=citeseer --mode=max
-   python nafs_hybrid.py --task=clustering --dataset=citeseer --mode=concat
-   python nafs_hybrid.py --task=clustering --dataset=pubmed --mode=mean
-   python nafs_hybrid.py --task=clustering --dataset=pubmed --mode=max
-   python nafs_hybrid.py --task=clustering --dataset=pubmed --mode=concat
-
+  # Clustering with hybrid scoring
+  python nafs_hybrid.py --task=clustering --dataset=cora --mode=mean
+  
   # Link prediction with hybrid scoring
-   python nafs_hybrid.py --task=link_prediction --dataset=cora --mode=mean
-   python nafs_hybrid.py --task=link_prediction --dataset=cora --mode=max
-   python nafs_hybrid.py --task=link_prediction --dataset=cora --mode=concat
-   python nafs_hybrid.py --task=link_prediction --dataset=citeseer --mode=mean
-   python nafs_hybrid.py --task=link_prediction --dataset=citeseer --mode=max
-   python nafs_hybrid.py --task=link_prediction --dataset=citeseer --mode=concat
-   python nafs_hybrid.py --task=link_prediction --dataset=pubmed --mode=mean
-   python nafs_hybrid.py --task=link_prediction --dataset=pubmed --mode=max
-   python nafs_hybrid.py --task=link_prediction --dataset=pubmed --mode=concat
+  python nafs_hybrid.py --task=link_prediction --dataset=cora --mode=mean
 
 Arguments:
-  --alpha   weight on smoothing score D (default 0.5)
-  --beta    weight on utility score U  (default 0.5)
+  --alpha   weight on smoothing score D (default 0.55)
+  --beta    weight on utility score U  (default 0.45)
 
 
 DATA FORMAT
